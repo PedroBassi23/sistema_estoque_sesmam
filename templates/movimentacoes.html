@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+
+{% block title %}Registrar Movimentações{% endblock %}
+
+{% block content %}
+<h1 class="mt-4 mb-4">Registrar Movimentações</h1>
+
+<div class="row">
+    <!-- Formulário de Nova Movimentação -->
+    <div class="col-lg-5 mb-4">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Nova Movimentação</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('movimentacoes') }}">
+                    <div class="mb-3">
+                        <label for="produto_id" class="form-label">Produto</label>
+                        <select class="form-select" id="produto_id" name="produto_id" required>
+                            <option value="" disabled selected>Selecione um produto...</option>
+                            {% for produto in produtos %}
+                                <option value="{{ produto.id }}">{{ produto.nome }} (Estoque: {{ produto.quantidade }})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="tipo" class="form-label">Tipo de Movimentação</label>
+                        <select class="form-select" id="tipo" name="tipo" required>
+                            <option value="Entrada">Entrada</option>
+                            <option value="Saída">Saída</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="quantidade" class="form-label">Quantidade</label>
+                        <input type="number" class="form-control" id="quantidade" name="quantidade" required min="1">
+                    </div>
+                    <div class="mb-3">
+                        <label for="responsavel" class="form-label">Responsável</label>
+                        <input type="text" class="form-control" id="responsavel" name="responsavel" value="{{ session.username }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="observacao" class="form-label">Observação (Opcional)</label>
+                        <textarea class="form-control" id="observacao" name="observacao" rows="2"></textarea>
+                    </div>
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-success">Registrar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabela de Últimas Movimentações -->
+    <div class="col-lg-7">
+        <div class="card shadow">
+             <div class="card-header">
+                <h5 class="mb-0">Últimas 10 Movimentações</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-sm table-striped">
+                        <thead>
+                            <tr>
+                                <th>Data</th>
+                                <th>Produto</th>
+                                <th>Tipo</th>
+                                <th>Qtd.</th>
+                                <th>Responsável</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for mov in movimentacoes %}
+                            <tr>
+                                <td>{{ mov.data.strftime('%d/%m/%y %H:%M') }}</td>
+                                <td>{{ mov.produto.nome }}</td>
+                                <td>
+                                    {% if mov.tipo == 'Entrada' %}
+                                        <span class="badge bg-success">Entrada</span>
+                                    {% else %}
+                                        <span class="badge bg-danger">Saída</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ mov.quantidade }}</td>
+                                <td>{{ mov.responsavel }}</td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="5" class="text-center">Nenhuma movimentação registrada.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

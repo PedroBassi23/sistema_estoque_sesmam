@@ -1,0 +1,22 @@
+Ambientes virtuais
+venv/
+.venv/
+env/
+.env
+
+Arquivos de cache do Python
+pycache/
+*.pyc
+*.pyo
+*.pyd
+
+Arquivos de banco de dados local
+*.db
+*.sqlite3
+
+Arquivos de instância do Flask
+instance/
+
+Arquivos de sistema operacional
+.DS_Store
+Thumbs.db

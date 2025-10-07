@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+
+{% block title %}Gestão de Estoque{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="mt-4">Estoque de Produtos</h1>
+    <div>
+        <a href="{{ url_for('exportar_csv') }}" class="btn btn-secondary"><i class="bi bi-download me-2"></i>Exportar .CSV</a>
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addItemModal"><i class="bi bi-plus-circle-fill me-2"></i>Adicionar Item</button>
+    </div>
+</div>
+
+<!-- Filtros -->
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="GET" action="{{ url_for('estoque') }}" class="row g-3 align-items-center">
+            <div class="col-md-4"><input type="text" class="form-control" name="filtro_nome" placeholder="Filtrar por nome..." value="{{ filtro_nome }}"></div>
+            <div class="col-md-4">
+                 <select class="form-select" name="filtro_categoria">
+                    <option value="">Todas as categorias</option>
+                    {% for cat in categorias %}<option value="{{ cat }}" {% if cat == filtro_categoria %}selected{% endif %}>{{ cat }}</option>{% endfor %}
+                 </select>
+            </div>
+            <div class="col-md-2">
+                 <select class="form-select" name="filtro_contrato">
+                    <option value="">Todos os contratos</option>
+                    {% for cont in contratos %}<option value="{{ cont }}" {% if cont == filtro_contrato %}selected{% endif %}>{{ cont }}</option>{% endfor %}
+                 </select>
+            </div>
+            <div class="col-md-2"><button type="submit" class="btn btn-info w-100">Filtrar</button></div>
+        </form>
+    </div>
+</div>
+
+<!-- Tabela de Produtos -->
+<div class="table-responsive">
+    <table class="table table-striped table-hover table-bordered">
+        <thead class="table-dark">
+            <tr>
+                <th>Nome do Item</th>
+                <th>Categoria</th>
+                <th>Contrato</th>
+                <th>Qtd. em Estoque</th>
+                <th>Status</th>
+                <th class="text-center">Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for produto in produtos %}
+            <tr class="align-middle">
+                <td>{{ produto.nome }}</td>
+                <td>{{ produto.categoria }}</td>
+                <td>{{ produto.contrato or 'N/A' }}</td>
+                <td><strong>{{ produto.quantidade }}</strong> {{ produto.unidade }}</td>
+                <td>
+                    {% if produto.estoque_minimo > 0 and produto.quantidade <= produto.estoque_minimo %}
+                        <span class="badge bg-danger p-2">ESTOQUE BAIXO</span>
+                    {% else %}
+                        <span class="badge bg-success p-2">OK</span>
+                    {% endif %}
+                </td>
+                <td class="text-center">
+                    <button type="button" class="btn btn-sm btn-warning me-1" 
+                        data-bs-toggle="modal" 
+                        data-bs-target="#editItemModal"
+                        data-id="{{ produto.id }}"
+                        data-nome="{{ produto.nome }}"
+                        data-categoria="{{ produto.categoria }}"
+                        data-contrato="{{ produto.contrato }}"
+                        data-unidade="{{ produto.unidade }}"
+                        data-valor="{{ '%.2f'|format(produto.valor_unitario)|replace('.', ',') }}"
+                        data-minimo="{{ produto.estoque_minimo }}">
+                        <i class="bi bi-pencil-fill"></i> Editar
+                    </button>
+                    <form action="{{ url_for('excluir_produto', id=produto.id) }}" method="POST" class="d-inline" onsubmit="return confirm('Tem certeza?');">
+                        <button type="submit" class="btn btn-sm btn-danger"><i class="bi bi-trash-fill"></i> Excluir</button>
+                    </form>
+                </td>
+            </tr>
+            {% else %}
+            <tr><td colspan="6" class="text-center">Nenhum produto encontrado.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Modal Adicionar Item -->
+<div class="modal fade" id="addItemModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header"><h5 class="modal-title">Adicionar Novo Item</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+            <form method="POST" action="{{ url_for('estoque') }}">
+                <div class="modal-body">
+                    <div class="mb-3"><label class="form-label">Nome do item:</label><input type="text" placeholder="ex: Arroz" class="form-control" name="nome" required></div>
+                    <div class="mb-3"><label class="form-label">Categoria:</label><input type="text" placeholder="ex: Alimentos" class="form-control" name="categoria" required></div>
+                    <div class="mb-3"><label class="form-label">Nº Contrato:</label><input type="text" placeholder="ex: 1214/2025" class="form-control" name="contrato"></div>
+                    <div class="mb-3"><label class="form-label">Unidade (Un, kg, L):</label><input type="text" placeholder="ex: Un, kg, L" class="form-control" name="unidade" required></div>
+                    <div class="mb-3"><label class="form-label">Qtd. Inicial:</label><input type="number" class="form-control" name="quantidade" value="0" min="0"></div>
+                    <div class="mb-3"><label class="form-label">Estoque Mínimo:</label><input type="number" class="form-control" name="estoque_minimo" value="0" min="0"></div>
+                    <div class="mb-3"><label class="form-label">Valor Unitário (R$):</label><input type="text" class="form-control" name="valor_unitario" value="0,00"></div>
+                </div>
+                <div class="modal-footer"><button type="submit" class="btn btn-primary">Salvar</button></div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Editar Item -->
+<div class="modal fade" id="editItemModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header"><h5 class="modal-title">Editar Item</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+            <form method="POST" action="">
+                <div class="modal-body">
+                    <div class="mb-3"><label class="form-label">Nome do item:</label><input type="text" placeholder="ex: Arroz" class="form-control" id="edit_nome" name="nome" required></div>
+                    <div class="mb-3"><label class="form-label">Categoria:</label><input type="text" placeholder="ex: Alimentos" class="form-control" id="edit_categoria" name="categoria" required></div>
+                    <div class="mb-3"><label class="form-label">Nº Contrato:</label><input type="text" placeholder="ex: 1214/2025" class="form-control" id="edit_contrato" name="contrato"></div>
+                    <div class="mb-3"><label class="form-label">Unidade (Un, kg,L):</label><input type="text" placeholder="ex: Un, kg, L" class="form-control" id="edit_unidade" name="unidade" required></div>
+                    <div class="mb-3"><label class="form-label">Estoque Mínimo:</label><input type="number" class="form-control" id="edit_estoque_minimo" name="estoque_minimo" min="0"></div>
+                    <div class="mb-3"><label class="form-label">Valor Unitário (R$):</label><input type="text" class="form-control" id="edit_valor_unitario" name="valor_unitario"></div>
+                </div>
+                <div class="modal-footer"><button type="submit" class="btn btn-primary">Salvar Alterações</button></div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

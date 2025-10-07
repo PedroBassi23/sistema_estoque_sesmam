@@ -1,0 +1,85 @@
+/* Google Fonts */
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #f8f9fc;
+}
+
+/* --- Wrapper e Sidebar --- */
+#wrapper {
+    overflow-x: hidden;
+}
+
+#sidebar-wrapper {
+    min-height: 100vh;
+    width: 250px;
+    position: fixed;
+    z-index: 1;
+    top: 0;
+    left: 0;
+    transition: all 0.3s;
+}
+
+#page-content-wrapper {
+    min-width: 100vw;
+    padding-left: 250px; /* Mesmo tamanho da sidebar */
+    transition: all 0.3s;
+}
+
+body:not(:has(#sidebar-wrapper)) #page-content-wrapper {
+   padding-left: 0;
+}
+
+
+.sidebar-heading {
+    padding: 1.5rem 1.25rem;
+    font-size: 1.2rem;
+    font-weight: 600;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.list-group-item {
+    border: none;
+    padding: 1rem 1.25rem;
+}
+
+.list-group-item.active {
+    background-color: #0d6efd !important;
+    border-color: #0d6efd !important;
+    color: white;
+    font-weight: 600;
+}
+.list-group-item-action:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+.sidebar-footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+}
+
+
+/* --- Cards do Dashboard --- */
+.card {
+    border-radius: .5rem;
+}
+.border-left-primary { border-left: .25rem solid #4e73df!important; }
+.border-left-success { border-left: .25rem solid #1cc88a!important; }
+.border-left-info { border-left: .25rem solid #36b9cc!important; }
+.border-left-danger { border-left: .25rem solid #e74a3b!important; }
+
+.text-gray-300 { color: #dddfeb!important; }
+
+
+/* --- Estilo Geral --- */
+.shadow {
+    box-shadow: 0 .15rem 1.75rem 0 rgba(58,59,69,.15)!important;
+}
+
+.table-hover tbody tr:hover {
+    background-color: #f1f3f5;
+}
+
+.vh-100 {
+    height: 100vh;
+}
+

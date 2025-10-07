@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block title %}Relatório de Movimentações{% endblock %}
+
+{% block content %}
+<h1 class="mt-4 mb-4">Relatório de Movimentações</h1>
+
+<!-- Filtros -->
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
+        <form method="GET" action="{{ url_for('relatorios') }}" class="row g-3 align-items-end">
+            <div class="col-md-3">
+                <label for="filtro_produto" class="form-label">Produto</label>
+                <select class="form-select" name="filtro_produto" id="filtro_produto">
+                    <option value="">Todos</option>
+                    {% for p in produtos %}<option value="{{ p.id }}" {% if p.id|string == filtro_produto %}selected{% endif %}>{{ p.nome }}</option>{% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label for="filtro_tipo" class="form-label">Tipo</label>
+                <select class="form-select" name="filtro_tipo" id="filtro_tipo">
+                    <option value="">Ambos</option>
+                    <option value="Entrada" {% if filtro_tipo == 'Entrada' %}selected{% endif %}>Entrada</option>
+                    <option value="Saída" {% if filtro_tipo == 'Saída' %}selected{% endif %}>Saída</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label for="filtro_data_inicio" class="form-label">De</label>
+                <input type="date" class="form-control" name="filtro_data_inicio" id="filtro_data_inicio" value="{{ filtro_data_inicio }}">
+            </div>
+            <div class="col-md-3">
+                <label for="filtro_data_fim" class="form-label">Até</label>
+                <input type="date" class="form-control" name="filtro_data_fim" id="filtro_data_fim" value="{{ filtro_data_fim }}">
+            </div>
+            <div class="col-md-1">
+                <button type="submit" class="btn btn-primary w-100">Filtrar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Tabela de Movimentações -->
+<div class="card shadow-sm">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover">
+                <thead class="table-light">
+                    <tr>
+                        <th>Data/Hora</th>
+                        <th>Produto</th>
+                        <th>Contrato</th>
+                        <th>Tipo</th>
+                        <th>Quantidade</th>
+                        <th>Responsável</th>
+                        <th>Observação</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for mov in movimentacoes %}
+                    <tr>
+                        <td>{{ mov.data.strftime('%d/%m/%Y %H:%M') }}</td>
+                        <td>{{ mov.produto.nome }}</td>
+                        <td>{{ mov.produto.contrato or 'N/A' }}</td>
+                        <td>
+                            {% if mov.tipo == 'Entrada' %}
+                                <span class="badge bg-success">Entrada</span>
+                            {% else %}
+                                <span class="badge bg-danger">Saída</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ mov.quantidade }}</td>
+                        <td>{{ mov.responsavel }}</td>
+                        <td>{{ mov.observacao }}</td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="7" class="text-center">Nenhuma movimentação encontrada para os filtros selecionados.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

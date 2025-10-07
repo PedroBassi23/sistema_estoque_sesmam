@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}Login - Sistema de Estoque{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center align-items-center vh-100">
+        <div class="col-md-5">
+            <div class="card shadow-lg border-0 rounded-lg">
+                <div class="card-header bg-primary text-white text-center">
+                    <h3 class="my-4"><i class="bi bi-box-seam-fill me-2"></i>Acesso ao Sistema de Estoque</h3>
+                </div>
+                <div class="card-body p-5">
+                    <form method="POST" action="{{ url_for('login') }}">
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" id="username" name="username" placeholder="Usuário" required>
+                            <label for="username">Usuário</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="password" class="form-control" id="password" name="password" placeholder="Senha" required>
+                            <label for="password">Senha</label>
+                        </div>
+                        <div class="d-grid mt-4">
+                            <button type="submit" class="btn btn-primary btn-lg">Entrar</button>
+                        </div>
+                    </form>
+                </div>
+                 <div class="card-footer text-center py-3">
+                    <div class="small">Usuário: admin | Senha: admin</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

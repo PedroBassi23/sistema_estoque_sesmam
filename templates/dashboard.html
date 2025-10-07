@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<h1 class="mt-4 mb-4">Dashboard</h1>
+
+<!-- Alertas de Estoque Baixo -->
+{% if produtos_estoque_baixo %}
+<div class="row">
+    <div class="col-12">
+        <div class="card shadow mb-4 border-left-danger">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-danger"><i class="bi bi-exclamation-triangle-fill me-2"></i>Alerta: Itens com Estoque Baixo</h6>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-sm table-bordered mb-0 table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Produto</th>
+                                <th>Qtd. Atual</th>
+                                <th>Qtd. Mínima</th>
+                                <th class="text-center">Ação</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for produto in produtos_estoque_baixo %}
+                            <tr class="align-middle">
+                                <td>{{ produto.nome }}</td>
+                                <td><strong class="text-danger">{{ produto.quantidade }}</strong></td>
+                                <td>{{ produto.estoque_minimo }}</td>
+                                <td class="text-center">
+                                    <a href="{{ url_for('movimentacoes') }}" class="btn btn-sm btn-success">Registrar Entrada</a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+<!-- Fim dos Alertas -->
+
+
+<!-- Cards de Estatísticas -->
+<div class="row">
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-primary shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Itens Cadastrados</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ stats.total_itens }}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="bi bi-tags-fill fs-2 text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-success shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Qtd. Total de Produtos</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ stats.total_produtos }}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="bi bi-stack fs-2 text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-info shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Valor Total do Estoque</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">R$ {{ stats.valor_total_estoque }}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="bi bi-currency-dollar fs-2 text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Gráfico de Movimentações -->
+<div class="row">
+    <div class="col-12">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Entradas e Saídas (Últimos 30 dias)</h6>
+            </div>
+            <div class="card-body">
+                <div class="chart-area">
+                    <canvas id="movimentacoesChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
